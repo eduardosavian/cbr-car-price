@@ -29,6 +29,10 @@ def menu(zip_name, file_name):
         "year": 2019,
     }
 
+    for key, value in dic_input.items():
+        if isinstance(value, str):
+            dic_input[key] = value.lower()
+
     most_similar_car, max_similarity = find_most_similar_car(dic_input, df, dic_weight)
     print(most_similar_car)
     print(max_similarity)
