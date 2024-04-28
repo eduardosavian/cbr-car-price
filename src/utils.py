@@ -15,8 +15,6 @@ def clean_df(df):
 
     df = df.drop(columns=drop_list, axis=1)
 
-    df = df.dropna(how="any")
-
     columns_rename = {
         "make": "maker",
         "sellingprice": "price",
@@ -24,9 +22,6 @@ def clean_df(df):
         "interior": "interior_color",
     }
     df = df.rename(columns=columns_rename)
-
-    df.drop(df[df["exterior_color"].str.contains("—")].index, inplace=True)
-    df.drop(df[df["interior_color"].str.contains("—")].index, inplace=True)
 
     cols = [
         "maker",
@@ -40,7 +35,15 @@ def clean_df(df):
         "year",
         "price",
     ]
+
     df = df[cols]
+
+    numeric_columns = ["odometer", "condition", "year", "price"]
+    for col in numeric_columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+        df[col] = df[col].astype(float)
+
+    df = df.dropna(how="any")
 
     return df
 
@@ -66,7 +69,8 @@ def similarity_condition(condition1, condition2):
 
 
 def similarity_odometer(odometer1, odometer2):
-    return (odometer1 - odometer2) ** 2
+    # return (odometer1 - odometer2) ** 2
+    return 0 if odometer1 == odometer2 else 1
 
 
 def similarity_color(color1, color2):
@@ -74,16 +78,18 @@ def similarity_color(color1, color2):
     # r1, g1, b1 = color_map[color1]
     # r2, g2, b2 = color_map[color2]
     # return (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2
-    return 1
+    return 0 if color1 == color2 else 1
 
 
 def similarity_year(year1, year2):
-    return (year1 - year2) ** 2
+    # return (year1 - year2) ** 2
+    return 0 if year1 == year2 else 1
 
-def find_most_similar(car_input, df, weights):
+
+def find_most_similar_car(car_input, df, weights):
     weights = np.array(list(weights.values()))
     cars = df.to_numpy()
-    # add a column in the end
+
     cars = np.concatenate((cars, np.zeros((cars.shape[0], 1))), axis=1)
 
     car_input = np.array(list(car_input.values()))
@@ -92,24 +98,31 @@ def find_most_similar(car_input, df, weights):
     max_similarity = float("inf")
     most_similar_car = None
 
-    for car in cars:
-        #print(car)
-        #print(car_input)
-        #print(weights)
-        sim = 0
-        sim = np.sum(weights * np.array([
-            similarity_maker(car[0], car_input[0]),
-            similarity_model(car[1], car_input[1]),
-            similarity_body(car[2], car_input[2]),
-            similarity_transmission(car[3], car_input[3]),
-            similarity_color(car[4], car_input[4]),
-            similarity_color(car[5], car_input[5]),
-            similarity_odometer(car[6], car_input[6]),
-            similarity_condition(car[7], car_input[7]),
-            similarity_year(car[8], car_input[8])
-        ]))
+    try:
+        for car in cars:
+            sim = np.sum(
+                weights
+                * np.array(
+                    [
+                        similarity_maker(car[0], car_input[0]),
+                        similarity_model(car[1], car_input[1]),
+                        similarity_body(car[2], car_input[2]),
+                        similarity_transmission(car[3], car_input[3]),
+                        similarity_color(car[4], car_input[4]),
+                        similarity_color(car[5], car_input[5]),
+                        similarity_odometer(car[6], car_input[6]),
+                        similarity_condition(car[7], car_input[7]),
+                        similarity_year(car[8], car_input[8]),
+                    ]
+                )
+            )
 
-        if sim < max_similarity:
-            max_similarity = sim
-            most_similar_car = car
+            car[-1] = sim
+
+            if sim < max_similarity:
+                max_similarity = sim
+                most_similar_car = car
+    except Exception as e:
+        print(f"Error occurred: {e}")
+
     return most_similar_car, max_similarity
