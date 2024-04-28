@@ -18,7 +18,7 @@ exterior_color_map = {
     "green": (0, 128, 0),
     "charcoal": (54, 69, 79),
     "orange": (255, 165, 0),
-    "off-write": (255, 255, 250),
+    "off-white": (255, 255, 250),
     "turquoise": (64, 224, 208),
     "pink": (255, 192, 203),
     "lime": (0, 255, 0),
@@ -39,13 +39,14 @@ interior_color_map = {
     "yellow": (255, 255, 0),
     "green": (0, 128, 0),
     "orange": (255, 165, 0),
-    "off-write": (255, 255, 250),
+    "off-white": (255, 255, 250),
     "tan": (210, 180, 140),
 }
 
 color_map = {}
 color_map.update(exterior_color_map)
 color_map.update(interior_color_map)
+
 
 def load_data(zip_name, file_name):
     archive = zipfile.ZipFile(zip_name)
@@ -89,6 +90,9 @@ def clean_df(df):
 
     df = df.dropna(how="any")
 
+    df.drop(df[df["exterior_color"].str.contains("—")].index, inplace=True)
+    df.drop(df[df["interior_color"].str.contains("—")].index, inplace=True)
+
     return df
 
 
@@ -109,7 +113,7 @@ def similarity_transmission(transmission1, transmission2):
 
 
 def similarity_condition(condition1, condition2):
-    return 0 if condition1 == condition2 else 1
+    return (float(condition1) - float(condition2)) ** 2
 
 
 def similarity_odometer(odometer1, odometer2):
@@ -117,11 +121,9 @@ def similarity_odometer(odometer1, odometer2):
 
 
 def similarity_color(color1, color2):
-    print(color1, color2)
     r1, g1, b1 = color_map[color1]
     r2, g2, b2 = color_map[color2]
-    # return (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2
-    return 0 if color1 == color2 else 1
+    return (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2
 
 
 def similarity_year(year1, year2):
