@@ -26,9 +26,12 @@ Tem que apresentar a modelagem indicando os atribuos, valores possiveis e como e
 
 - O programa tem que ter cadastrados numa base os casos (pelo menos 50). Um interface que permita alterar se o usuário quiser os pesos dos atributos e inserir o caso de entrada (que será comparado a todos os casos da base e calculado a similaridade com cada um deles). A saída deve mostrar o caso de entra e todos os casos da base em ordem de similaridade (do mais similar ao menos similar). Todos os atributos do caso devem ser apresentados e o % de similaridade com o caso de entrada.
 
+## Run
+
+```bash
+python src/main.py
+```
+
 ## Links
 
-- [Fuel Economy Dataset](https://www.kaggle.com/datasets/sahirmaharajj/fuel-economy)
 - [Vehicle Sales Data](https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data)
-- [Student Behaviour Dataset](https://www.kaggle.com/datasets/nitishjolly/student-behaviour)
-- [Movie Time Dataset](https://www.kaggle.com/datasets/alexandrelemercier/movie-time)
