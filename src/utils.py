@@ -120,11 +120,11 @@ def similarity_transmission(transmission1, transmission2):
 
 
 def similarity_condition(condition1, condition2):
-    return (float(condition1) - float(condition2)) ** 2
+    return (np.abs(float(condition1) - float(condition2))/float(condition2))
 
 
 def similarity_odometer(odometer1, odometer2):
-    return (float(odometer1) - float(odometer2)) ** 2
+    return (np.abs(float(odometer1) - float(odometer2))/float(odometer2))
 
 
 def similarity_color(color1, color2):
@@ -161,8 +161,7 @@ def calculate_car_similarity(car_input, df, weights):
             )
         )
 
-        # put sim in % scale
-        # sim = 1 - sim / np.sum(weights)
+
         car[-1] = sim
 
     cars = pd.DataFrame(cars, columns=list(df.columns) + ["similarity"])

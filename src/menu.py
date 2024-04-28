@@ -3,15 +3,15 @@ from utils import *
 
 def test_weight():
     dic_weight = {
-        "maker": 1,
-        "model": 1,
-        "body": 1,
-        "transmission": 1,
-        "exterior_color": 1,
-        "interior_color": 1,
-        "condition": 1,
-        "odometer": 1,
-        "year": 1,
+        "maker": 25,
+        "model": 5,
+        "body": 20,
+        "transmission": 10,
+        "exterior_color": 2,
+        "interior_color": 2,
+        "condition": 15,
+        "odometer": 16,
+        "year": 6,
     }
 
     return dic_weight
