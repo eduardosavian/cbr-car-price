@@ -90,8 +90,15 @@ def clean_df(df):
 
     df = df.dropna(how="any")
 
-    df.drop(df[df["exterior_color"].str.contains("—")].index, inplace=True)
-    df.drop(df[df["interior_color"].str.contains("—")].index, inplace=True)
+    for col in df.columns:
+        if df[col].dtype == "object":
+            df[col] = df[col].str.lower()
+
+    filter_columns = ["exterior_color", "interior_color"]
+    invalid_value = "—"
+
+    for col in filter_columns:
+        df = df[~df[col].str.contains(invalid_value)]
 
     return df
 
@@ -130,16 +137,11 @@ def similarity_year(year1, year2):
     return (float(year1) - float(year2)) ** 2
 
 
-def find_most_similar_car(car_input, df, weights):
+def calculate_car_similarity(car_input, df, weights):
     weights = np.array(list(weights.values()))
     cars = df.to_numpy()
-
     cars = np.concatenate((cars, np.zeros((cars.shape[0], 1))), axis=1)
-
     car_input = np.array(list(car_input.values()))
-
-    max_similarity = float("inf")
-    most_similar_car = None
 
     for car in cars:
         sim = np.sum(
@@ -159,10 +161,11 @@ def find_most_similar_car(car_input, df, weights):
             )
         )
 
+        # put sim in % scale
+        # sim = 1 - sim / np.sum(weights)
         car[-1] = sim
 
-        if sim < max_similarity:
-            max_similarity = sim
-            most_similar_car = car
+    cars = pd.DataFrame(cars, columns=list(df.columns) + ["similarity"])
+    cars = cars.sort_values(by="similarity")
 
-    return most_similar_car, max_similarity
+    return cars
