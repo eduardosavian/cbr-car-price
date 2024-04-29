@@ -44,15 +44,34 @@ class CarRecommendationApp:
         for key in self.dic_input:
             ttk.Label(frm, text=f"{key.capitalize()}:").grid(column=0, row=row, sticky='e')
 
-            if key in ["exterior_color", "interior_color"]:
-                # Dropdown menu for color selection
-                colors = ["Select Color", "Black", "White", "Red", "Blue", "Silver", "Gray", "Green"]
+            if key == "exterior_color":
+                colors = [
+                    "White", "Gray", "Black", "Red", "Silver", "Brown", "Beige", "Blue",
+                    "Purple", "Burgundy", "Gold", "Yellow", "Green", "Charcoal", "Orange",
+                    "Off-White", "Turquoise", "Pink", "Lime"
+                ]
+                # Dropdown menu for exterior color selection
                 color_combo = ttk.Combobox(frm, textvariable=self.dic_input[key], values=colors)
                 color_combo.grid(column=1, row=row, pady=5)
-                color_combo.current(0)  # Set default to "Select Color"
+                color_combo.current(2)  # Set default to "Black"
+
+            elif key == "interior_color":
+                colors = [
+                    "White", "Gray", "Black", "Red", "Silver", "Brown", "Beige", "Blue",
+                    "Purple", "Burgundy", "Gold", "Yellow", "Green", "Orange", "Off-White",
+                    "Tan"
+                ]
+                # Dropdown menu for interior color selection
+                color_combo = ttk.Combobox(frm, textvariable=self.dic_input[key], values=colors)
+                color_combo.grid(column=1, row=row, pady=5)
+                color_combo.current(2)  # Set default to "Black"
+
             else:
                 # Normal Entry widget for other attributes
                 ttk.Entry(frm, textvariable=self.dic_input[key]).grid(column=1, row=row, pady=5)
+
+            row += 1
+
 
             row += 1
 
