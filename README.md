@@ -29,6 +29,10 @@ Tem que apresentar a modelagem indicando os atribuos, valores possiveis e como e
 ## Run
 
 ```bash
+pip install -r requirements.txt
+```
+
+```bash
 python src/main.py
 ```
 
