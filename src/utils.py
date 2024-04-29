@@ -120,11 +120,11 @@ def similarity_transmission(transmission1, transmission2):
 
 
 def similarity_condition(condition1, condition2):
-    return (np.abs(float(condition1) - float(condition2))/float(condition2))
+    return np.abs(float(condition1) - float(condition2)) / float(condition2)
 
 
 def similarity_odometer(odometer1, odometer2):
-    return (np.abs(float(odometer1) - float(odometer2))/float(odometer2))
+    return np.abs(float(odometer1) - float(odometer2)) / float(odometer2)
 
 
 def similarity_color(color1, color2):
@@ -160,7 +160,6 @@ def calculate_car_similarity(car_input, df, weights):
                 ]
             )
         )
-
 
         car[-1] = sim
 
