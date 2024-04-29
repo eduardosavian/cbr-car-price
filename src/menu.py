@@ -100,7 +100,23 @@ class CarRecommendationApp:
         # Calculate recommendations
         self.df = calculate_car_similarity(user_input, self.df, user_weights)
 
-        # Display recommendations (for demonstration, you can customize this)
-        top_recommendations = self.df.head(3)
-        print(top_recommendations)  # For now, just printing to console
+        # Clear any previous recommendations displayed
+        for widget in self.master.winfo_children():
+            widget.destroy()
 
+        # Display recommendations in a table-like format
+        frm = ttk.Frame(self.master, padding=10)
+        frm.grid()
+
+        # Create headers for the table
+        headers = self.df.columns
+        for col_idx, header in enumerate(headers):
+            ttk.Label(frm, text=f"{header.capitalize()}", font=('Helvetica', 12, 'bold')).grid(row=0, column=col_idx, padx=10, pady=5)
+
+        # Display each recommendation as a row in the table
+        for i, (index, row) in enumerate(self.df.head(10).iterrows()):
+            for col_idx, header in enumerate(headers):
+                ttk.Label(frm, text=row[header]).grid(row=i+1, column=col_idx, padx=10, pady=5)
+
+        # Button to close the app
+        ttk.Button(frm, text="Close", command=self.master.destroy).grid(row=i+2, column=0, columnspan=len(headers), pady=10)
