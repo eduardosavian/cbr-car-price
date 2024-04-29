@@ -1,65 +1,87 @@
-from utils import *
+from tkinter import *
+from tkinter import ttk
+from utils import load_data, clean_df, calculate_car_similarity
 
+class CarRecommendationApp:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Car Recommendation System")
 
-def test_weight():
-    dic_weight = {
-        "maker": 25,
-        "model": 5,
-        "body": 20,
-        "transmission": 10,
-        "exterior_color": 2,
-        "interior_color": 2,
-        "condition": 15,
-        "odometer": 16,
-        "year": 6,
-    }
+        # Initialize data structures
+        self.df = None
+        self.dic_input = {
+            "maker": StringVar(value="Toyota"),
+            "model": StringVar(value="Corolla"),
+            "body": StringVar(value="Sedan"),
+            "transmission": StringVar(value="automatic"),
+            "exterior_color": StringVar(value="black"),
+            "interior_color": StringVar(value="black"),
+            "condition": StringVar(value="50"),
+            "odometer": StringVar(value="100000"),
+            "year": StringVar(value="2018")
+        }
+        self.dic_weight = {
+            "maker": DoubleVar(value=25),
+            "model": DoubleVar(value=5),
+            "body": DoubleVar(value=20),
+            "transmission": DoubleVar(value=10),
+            "exterior_color": DoubleVar(value=2),
+            "interior_color": DoubleVar(value=2),
+            "condition": DoubleVar(value=15),
+            "odometer": DoubleVar(value=16),
+            "year": DoubleVar(value=6)
+        }
 
-    return dic_weight
+        # Create GUI elements
+        self.create_widgets()
 
-def test_input():
-    dic_input = {
-        "maker": "Toyota",
-        "model": "Corolla",
-        "body": "Sedan",
-        "transmission": "automatic",
-        "exterior_color": "black",
-        "interior_color": "black",
-        "condition": "50",
-        "odometer": "100000",
-        "year": "2018",
-    }
+    def create_widgets(self):
+        frm = ttk.Frame(self.master, padding=10)
+        frm.grid()
 
-    return dic_input
+        # Labels and Entry Widgets for user input
+        row = 0
+        for key in self.dic_input:
+            ttk.Label(frm, text=f"{key.capitalize()}:").grid(column=0, row=row, sticky='e')
 
-def get_input(dic_input):
-    print("Please enter the following information:")
-    for key, value in dic_input.items():
-        dic_input[key] = input(f"{key}: ").lower()
-    return dic_input
+            if key in ["exterior_color", "interior_color"]:
+                # Dropdown menu for color selection
+                colors = ["Select Color", "Black", "White", "Red", "Blue", "Silver", "Gray", "Green"]
+                color_combo = ttk.Combobox(frm, textvariable=self.dic_input[key], values=colors)
+                color_combo.grid(column=1, row=row, pady=5)
+                color_combo.current(0)  # Set default to "Select Color"
+            else:
+                # Normal Entry widget for other attributes
+                ttk.Entry(frm, textvariable=self.dic_input[key]).grid(column=1, row=row, pady=5)
 
-def get_weight(dic_weight):
-    print("Please enter the following weights:")
-    for key, value in dic_weight.items():
-        dic_weight[key] = float(input(f"{key}: "))
-    return dic_weight
+            row += 1
 
-def show_all_cars(df):
-    print(df)
+        # Labels and Entry Widgets for weights
+        row += 1
+        ttk.Label(frm, text="Enter Weights:").grid(column=0, row=row, columnspan=2, pady=10)
 
-def menu(zip_name, file_name):
-    df = load_data(zip_name, file_name)
-    df = clean_df(df)
+        row += 1
+        for key in self.dic_weight:
+            ttk.Label(frm, text=f"{key.capitalize()} Weight:").grid(column=0, row=row, sticky='e')
+            ttk.Entry(frm, textvariable=self.dic_weight[key]).grid(column=1, row=row, pady=5)
+            row += 1
 
-    dic_input = test_input()
-    dic_weight = test_weight()
+        # Button to calculate and display recommendations
+        ttk.Button(frm, text="Get Recommendations", command=self.get_recommendations).grid(column=0, row=row, columnspan=2, pady=10)
 
-    #dic_input = get_input(dic_input)
-    #dic_weight = get_weight(dic_weight)
+    def get_recommendations(self):
+        # Load and process data
+        self.df = load_data("data/car_prices_data.zip", "car_prices.csv")
+        self.df = clean_df(self.df)
 
-    for key, value in dic_input.items():
-        if isinstance(value, str):
-            dic_input[key] = value.lower()
+        # Prepare input and weights
+        user_input = {key: var.get().lower() for key, var in self.dic_input.items()}
+        user_weights = {key: var.get() for key, var in self.dic_weight.items()}
 
-    df = calculate_car_similarity(dic_input, df, dic_weight)
-    print(dic_input.values())
-    print(df.head(3))
+        # Calculate recommendations
+        self.df = calculate_car_similarity(user_input, self.df, user_weights)
+
+        # Display recommendations (for demonstration, you can customize this)
+        top_recommendations = self.df.head(3)
+        print(top_recommendations)  # For now, just printing to console
+

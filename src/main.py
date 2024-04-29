@@ -1,11 +1,14 @@
-from menu import menu
-
+from menu import *
 
 def main():
-    zip_name = "data/car_prices_data.zip"
-    file_name = "car_prices.csv"
+    root = Tk()
+    root.title("Car Recommendation System")
 
-    menu(zip_name, file_name)
+    # Initialize the GUI application
+    app = CarRecommendationApp(root)
+
+    # Start the Tkinter event loop
+    root.mainloop()
 
 
 if __name__ == "__main__":
