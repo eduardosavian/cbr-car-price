@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import zipfile
+from openpyxl import Workbook  # Import Workbook from openpyxl
+
 
 exterior_color_map = {
     "white": (255, 255, 255),
@@ -54,6 +56,29 @@ def load_data(zip_name, file_name):
 
     return df
 
+def clean_body_types(body_type):
+    if isinstance(body_type, str):  # Check if the value is a string
+        body_type = body_type.strip().lower()  # Convert to lowercase and remove extra spaces
+        if body_type in ['suv', 'sport utility vehicle']:
+            return 'suv'
+        elif body_type in ['sedan', 'saloon', 'hatchback', 'wagon', 'estate', 'g sedan']:
+            return 'sedan'
+        elif body_type in ['convertible', 'coupe', 'g coupe', 'Elantra Coupe', 'cts-v coupe', 'g37 coupe', 'g37 convertible', 'q60 coupe', 'q60 convertible', 'koup']:
+            return 'convertible'
+        elif body_type in ['van', 'minivan', 'e-series van', 'ram van', 'transit van', 'promaster cargo van']:
+            return 'van'
+        elif body_type in [
+            'crew cab', 'double cab', 'extended cab', 'regular cab', 'supercrew', 'crewmax cab',
+            'access cab', 'king cab', 'quad cab', 'super cab', 'club cab', 'mega cab', 'xtracab',
+            'cab plus 4', 'cab plus', 'SuperCab'
+        ]:
+            return 'cab'  # Example category for various cab types
+        else:
+            return 'other'  # Assign 'other' category for unknown types or unique categories
+    else:
+        return 'other'  # Handle NaN values by assigning to 'other' category
+
+
 
 def clean_df(df):
     drop_list = ["trim", "vin", "state", "saledate", "seller", "mmr"]
@@ -89,6 +114,11 @@ def clean_df(df):
         df[col] = df[col].astype(float)
 
     df = df.dropna(how="any")
+    # where is any postion is emphy
+    # drop that row
+    df = df.drop
+
+    df['body'] = df['body'].apply(clean_body_types)
 
     for col in df.columns:
         if df[col].dtype == "object":
@@ -96,6 +126,12 @@ def clean_df(df):
 
     filter_columns = ["exterior_color", "interior_color"]
     invalid_value = "—"
+
+    for col in filter_columns:
+        df = df[~df[col].str.contains(invalid_value)]
+
+    filter_columns = ["body"]
+    invalid_value = "other"
 
     for col in filter_columns:
         df = df[~df[col].str.contains(invalid_value)]
@@ -165,5 +201,8 @@ def calculate_car_similarity(car_input, df, weights):
 
     cars = pd.DataFrame(cars, columns=list(df.columns) + ["similarity"])
     cars = cars.sort_values(by="similarity")
+
+    cars.to_excel('output.xlsx', index=False)
+
 
     return cars

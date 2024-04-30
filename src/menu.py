@@ -90,7 +90,7 @@ class CarRecommendationApp:
 
     def get_recommendations(self):
         # Load and process data
-        self.df = load_data("data/car_prices_data.zip", "car_prices.csv")
+        self.df = load_data("data/car_prices.zip", "car_prices.csv")
         self.df = clean_df(self.df)
 
         # Prepare input and weights
