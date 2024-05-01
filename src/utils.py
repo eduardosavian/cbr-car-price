@@ -56,28 +56,68 @@ def load_data(zip_name, file_name):
 
     return df
 
+
 def clean_body_types(body_type):
     if isinstance(body_type, str):  # Check if the value is a string
-        body_type = body_type.strip().lower()  # Convert to lowercase and remove extra spaces
-        if body_type in ['suv', 'sport utility vehicle']:
-            return 'suv'
-        elif body_type in ['sedan', 'saloon', 'hatchback', 'wagon', 'estate', 'g sedan']:
-            return 'sedan'
-        elif body_type in ['convertible', 'coupe', 'g coupe', 'Elantra Coupe', 'cts-v coupe', 'g37 coupe', 'g37 convertible', 'q60 coupe', 'q60 convertible', 'koup']:
-            return 'convertible'
-        elif body_type in ['van', 'minivan', 'e-series van', 'ram van', 'transit van', 'promaster cargo van']:
-            return 'van'
+        body_type = (
+            body_type.strip().lower()
+        )  # Convert to lowercase and remove extra spaces
+        if body_type in ["suv", "sport utility vehicle"]:
+            return "suv"
         elif body_type in [
-            'crew cab', 'double cab', 'extended cab', 'regular cab', 'supercrew', 'crewmax cab',
-            'access cab', 'king cab', 'quad cab', 'super cab', 'club cab', 'mega cab', 'xtracab',
-            'cab plus 4', 'cab plus', 'SuperCab'
+            "sedan",
+            "saloon",
+            "hatchback",
+            "wagon",
+            "estate",
+            "g sedan",
         ]:
-            return 'cab'  # Example category for various cab types
+            return "sedan"
+        elif body_type in [
+            "convertible",
+            "coupe",
+            "g coupe",
+            "Elantra Coupe",
+            "cts-v coupe",
+            "g37 coupe",
+            "g37 convertible",
+            "q60 coupe",
+            "q60 convertible",
+            "koup",
+        ]:
+            return "convertible"
+        elif body_type in [
+            "van",
+            "minivan",
+            "e-series van",
+            "ram van",
+            "transit van",
+            "promaster cargo van",
+        ]:
+            return "van"
+        elif body_type in [
+            "crew cab",
+            "double cab",
+            "extended cab",
+            "regular cab",
+            "supercrew",
+            "crewmax cab",
+            "access cab",
+            "king cab",
+            "quad cab",
+            "super cab",
+            "club cab",
+            "mega cab",
+            "xtracab",
+            "cab plus 4",
+            "cab plus",
+            "SuperCab",
+        ]:
+            return "cab"  # Example category for various cab types
         else:
-            return 'other'  # Assign 'other' category for unknown types or unique categories
+            return "other"  # Assign 'other' category for unknown types or unique categories
     else:
-        return 'other'  # Handle NaN values by assigning to 'other' category
-
+        return "other"  # Handle NaN values by assigning to 'other' category
 
 
 def clean_df(df):
@@ -115,7 +155,7 @@ def clean_df(df):
 
     df = df.dropna(how="any")
 
-    df['body'] = df['body'].apply(clean_body_types)
+    df["body"] = df["body"].apply(clean_body_types)
 
     for col in df.columns:
         if df[col].dtype == "object":
