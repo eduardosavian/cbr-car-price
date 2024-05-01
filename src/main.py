@@ -1,5 +1,6 @@
 from menu import *
 
+
 def main():
     root = Tk()
     root.title("Car Recommendation System")

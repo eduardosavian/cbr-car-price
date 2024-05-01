@@ -172,17 +172,27 @@ class CarRecommendationApp:
         for col_idx, header in enumerate(headers):
             ttk.Label(
                 frm, text=f"{header.capitalize()}", font=("Helvetica", 12, "bold")
-            ).grid(row=len(user_input) + len(user_weights) + 4, column=col_idx, padx=10, pady=5)
+            ).grid(
+                row=len(user_input) + len(user_weights) + 4,
+                column=col_idx,
+                padx=10,
+                pady=5,
+            )
 
         # Display top recommended cars
         for i, (index, row) in enumerate(self.df.head(10).iterrows()):
             for col_idx, header in enumerate(headers):
                 ttk.Label(frm, text=row[header]).grid(
-                    row=len(user_input) + len(user_weights) + i + 5, column=col_idx, padx=10, pady=5
+                    row=len(user_input) + len(user_weights) + i + 5,
+                    column=col_idx,
+                    padx=10,
+                    pady=5,
                 )
 
         # Button to close the window
         ttk.Button(frm, text="Close", command=self.master.destroy).grid(
-            row=len(user_input) + len(user_weights) + i + 6, column=0, columnspan=len(headers), pady=10
+            row=len(user_input) + len(user_weights) + i + 6,
+            column=0,
+            columnspan=len(headers),
+            pady=10,
         )
-
