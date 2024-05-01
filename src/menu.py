@@ -7,7 +7,7 @@ class CarRecommendationApp:
         self.master = master
         self.master.title("Car Recommendation System")
 
-        # Initialize data structures
+
         self.df = None
         self.dic_input = {
             "maker": StringVar(value="Toyota"),
@@ -32,14 +32,13 @@ class CarRecommendationApp:
             "year": DoubleVar(value=6)
         }
 
-        # Create GUI elements
         self.create_widgets()
 
     def create_widgets(self):
         frm = ttk.Frame(self.master, padding=10)
         frm.grid()
 
-        # Labels and Entry Widgets for user input
+
         row = 0
         for key in self.dic_input:
             ttk.Label(frm, text=f"{key.capitalize()}:").grid(column=0, row=row, sticky='e')
@@ -50,10 +49,10 @@ class CarRecommendationApp:
                     "Purple", "Burgundy", "Gold", "Yellow", "Green", "Charcoal", "Orange",
                     "Off-White", "Turquoise", "Pink", "Lime"
                 ]
-                # Dropdown menu for exterior color selection
+
                 color_combo = ttk.Combobox(frm, textvariable=self.dic_input[key], values=colors)
                 color_combo.grid(column=1, row=row, pady=5)
-                color_combo.current(2)  # Set default to "Black"
+                color_combo.current(2)
 
             elif key == "interior_color":
                 colors = [
@@ -61,17 +60,19 @@ class CarRecommendationApp:
                     "Purple", "Burgundy", "Gold", "Yellow", "Green", "Orange", "Off-White",
                     "Tan"
                 ]
-                # Dropdown menu for interior color selection
+
                 color_combo = ttk.Combobox(frm, textvariable=self.dic_input[key], values=colors)
                 color_combo.grid(column=1, row=row, pady=5)
-                color_combo.current(2)  # Set default to "Black"
+                color_combo.current(2)
+
+            elif key == "body":
+                cars_body = ['suv', 'sedan', 'van', 'cab', 'convertible']
+                body_combo = ttk.Combobox(frm, textvariable=self.dic_input[key], values=cars_body)
+                body_combo.grid(column=1, row=row, pady=5)
+                body_combo.current(0)
 
             else:
-                # Normal Entry widget for other attributes
                 ttk.Entry(frm, textvariable=self.dic_input[key]).grid(column=1, row=row, pady=5)
-
-            row += 1
-
 
             row += 1
 
@@ -88,35 +89,35 @@ class CarRecommendationApp:
         # Button to calculate and display recommendations
         ttk.Button(frm, text="Get Recommendations", command=self.get_recommendations).grid(column=0, row=row, columnspan=2, pady=10)
 
+
     def get_recommendations(self):
-        # Load and process data
+
         self.df = load_data("data/car_prices.zip", "car_prices.csv")
         self.df = clean_df(self.df)
 
-        # Prepare input and weights
+
         user_input = {key: var.get().lower() for key, var in self.dic_input.items()}
         user_weights = {key: var.get() for key, var in self.dic_weight.items()}
 
-        # Calculate recommendations
+
         self.df = calculate_car_similarity(user_input, self.df, user_weights)
 
-        # Clear any previous recommendations displayed
+
         for widget in self.master.winfo_children():
             widget.destroy()
 
-        # Display recommendations in a table-like format
+
         frm = ttk.Frame(self.master, padding=10)
         frm.grid()
 
-        # Create headers for the table
+
         headers = self.df.columns
         for col_idx, header in enumerate(headers):
             ttk.Label(frm, text=f"{header.capitalize()}", font=('Helvetica', 12, 'bold')).grid(row=0, column=col_idx, padx=10, pady=5)
 
-        # Display each recommendation as a row in the table
         for i, (index, row) in enumerate(self.df.head(10).iterrows()):
             for col_idx, header in enumerate(headers):
                 ttk.Label(frm, text=row[header]).grid(row=i+1, column=col_idx, padx=10, pady=5)
 
-        # Button to close the app
+
         ttk.Button(frm, text="Close", command=self.master.destroy).grid(row=i+2, column=0, columnspan=len(headers), pady=10)

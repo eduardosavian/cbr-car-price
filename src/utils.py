@@ -114,9 +114,6 @@ def clean_df(df):
         df[col] = df[col].astype(float)
 
     df = df.dropna(how="any")
-    # where is any postion is emphy
-    # drop that row
-    df = df.drop
 
     df['body'] = df['body'].apply(clean_body_types)
 
@@ -201,8 +198,5 @@ def calculate_car_similarity(car_input, df, weights):
 
     cars = pd.DataFrame(cars, columns=list(df.columns) + ["similarity"])
     cars = cars.sort_values(by="similarity")
-
-    cars.to_excel('output.xlsx', index=False)
-
 
     return cars
