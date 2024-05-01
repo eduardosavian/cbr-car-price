@@ -163,13 +163,8 @@ class CarRecommendationApp:
             ttk.Label(frm, text=f"{key.capitalize()}: {value}").grid(
                 row=idx + 1, column=0, sticky="w", padx=10, pady=5
             )
-
-        ttk.Label(frm, text="User Weights:", font=("Helvetica", 14, "bold")).grid(
-            row=len(user_input) + 2, column=0, columnspan=2, pady=10
-        )
-        for idx, (key, value) in enumerate(user_weights.items()):
-            ttk.Label(frm, text=f"{key.capitalize()} Weight: {value}").grid(
-                row=len(user_input) + idx + 3, column=0, sticky="w", padx=10, pady=5
+            ttk.Label(frm, text=f"Weight: {user_weights[key]}").grid(
+                row=idx + 1, column=1, sticky="w", padx=10, pady=5
             )
 
         # Display recommendation headers
@@ -190,3 +185,4 @@ class CarRecommendationApp:
         ttk.Button(frm, text="Close", command=self.master.destroy).grid(
             row=len(user_input) + len(user_weights) + i + 6, column=0, columnspan=len(headers), pady=10
         )
+
