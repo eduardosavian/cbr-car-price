@@ -22,7 +22,7 @@ class CarRecommendationApp:
         }
         self.dic_weight = {
             "maker": DoubleVar(value=30),
-            "model": DoubleVar(value=15),
+            "model": DoubleVar(value=30),
             "body": DoubleVar(value=30),
             "transmission": DoubleVar(value=10),
             "exterior_color": DoubleVar(value=2),
@@ -136,33 +136,57 @@ class CarRecommendationApp:
         ).grid(column=0, row=row, columnspan=2, pady=10)
 
     def get_recommendations(self):
-
+        # Load and clean the car data
         self.df = load_data("data/car_prices.zip", "car_prices.csv")
         self.df = clean_df(self.df)
 
+        # Get user input and weights
         user_input = {key: var.get().lower() for key, var in self.dic_input.items()}
         user_weights = {key: var.get() for key, var in self.dic_weight.items()}
 
+        # Calculate car similarity based on user input and weights
         self.df = calculate_car_similarity(user_input, self.df, user_weights)
 
+        # Clear existing widgets in the master window
         for widget in self.master.winfo_children():
             widget.destroy()
 
+        # Create a new frame for displaying recommendations
         frm = ttk.Frame(self.master, padding=10)
         frm.grid()
 
+        # Display user input and weights
+        ttk.Label(frm, text="User Input:", font=("Helvetica", 14, "bold")).grid(
+            row=0, column=0, columnspan=2, pady=10
+        )
+        for idx, (key, value) in enumerate(user_input.items()):
+            ttk.Label(frm, text=f"{key.capitalize()}: {value}").grid(
+                row=idx + 1, column=0, sticky="w", padx=10, pady=5
+            )
+
+        ttk.Label(frm, text="User Weights:", font=("Helvetica", 14, "bold")).grid(
+            row=len(user_input) + 2, column=0, columnspan=2, pady=10
+        )
+        for idx, (key, value) in enumerate(user_weights.items()):
+            ttk.Label(frm, text=f"{key.capitalize()} Weight: {value}").grid(
+                row=len(user_input) + idx + 3, column=0, sticky="w", padx=10, pady=5
+            )
+
+        # Display recommendation headers
         headers = self.df.columns
         for col_idx, header in enumerate(headers):
             ttk.Label(
                 frm, text=f"{header.capitalize()}", font=("Helvetica", 12, "bold")
-            ).grid(row=0, column=col_idx, padx=10, pady=5)
+            ).grid(row=len(user_input) + len(user_weights) + 4, column=col_idx, padx=10, pady=5)
 
+        # Display top recommended cars
         for i, (index, row) in enumerate(self.df.head(10).iterrows()):
             for col_idx, header in enumerate(headers):
                 ttk.Label(frm, text=row[header]).grid(
-                    row=i + 1, column=col_idx, padx=10, pady=5
+                    row=len(user_input) + len(user_weights) + i + 5, column=col_idx, padx=10, pady=5
                 )
 
+        # Button to close the window
         ttk.Button(frm, text="Close", command=self.master.destroy).grid(
-            row=i + 2, column=0, columnspan=len(headers), pady=10
+            row=len(user_input) + len(user_weights) + i + 6, column=0, columnspan=len(headers), pady=10
         )
