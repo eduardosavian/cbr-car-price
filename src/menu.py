@@ -10,26 +10,26 @@ class CarRecommendationApp:
 
         self.df = None
         self.dic_input = {
-            "maker": StringVar(value="Toyota"),
-            "model": StringVar(value="Corolla"),
-            "body": StringVar(value="Sedan"),
+            "maker": StringVar(value="bmw"),
+            "model": StringVar(value="x5"),
+            "body": StringVar(value="suv"),
             "transmission": StringVar(value="automatic"),
             "exterior_color": StringVar(value="black"),
             "interior_color": StringVar(value="black"),
-            "condition": StringVar(value="50"),
-            "odometer": StringVar(value="100000"),
-            "year": StringVar(value="2018"),
+            "odometer": StringVar(value="37"),
+            "condition": StringVar(value="5"),
+            "year": StringVar(value="2014"),
         }
         self.dic_weight = {
-            "maker": DoubleVar(value=25),
-            "model": DoubleVar(value=5),
-            "body": DoubleVar(value=20),
+            "maker": DoubleVar(value=30),
+            "model": DoubleVar(value=15),
+            "body": DoubleVar(value=30),
             "transmission": DoubleVar(value=10),
             "exterior_color": DoubleVar(value=2),
             "interior_color": DoubleVar(value=2),
-            "condition": DoubleVar(value=15),
-            "odometer": DoubleVar(value=16),
-            "year": DoubleVar(value=6),
+            "odometer": DoubleVar(value=10),
+            "condition": DoubleVar(value=10),
+            "year": DoubleVar(value=5),
         }
 
         self.create_widgets()
