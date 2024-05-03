@@ -5,8 +5,9 @@ from similarity import load_data, clean_df, calculate_car_similarity
 class CarRecommendationApp:
     KNOWLEDGE_DB = 'car_prices_mini'
     def __init__(self, master):
-        self.master = master
-        self.master.title("Car Recommendation System")
+        self.master_frame = master
+        self.recc_frame = None
+        self.master_frame.title("Car Recommendation System")
 
         self.df = None
         self.dic_input = {
@@ -40,7 +41,7 @@ class CarRecommendationApp:
 
 
     def create_widgets(self):
-        frm = ttk.Frame(self.master, padding=10)
+        frm = ttk.Frame(self.master_frame, padding=10)
         frm.grid()
 
         row = 0
@@ -171,11 +172,11 @@ class CarRecommendationApp:
         self.df = calculate_car_similarity(user_input, self.df, user_weights, tolerance_windows)
 
         # Clear existing widgets in the master window
-        for widget in self.master.winfo_children():
-            widget.destroy()
+        # for widget in self.master_frame.winfo_children():
+        #     widget.destroy()
 
-        # Create a new frame for displaying recommendations
-        frm = ttk.Frame(self.master, padding=10)
+        self.recc_frame = tk.Toplevel(self.master_frame)
+        frm = ttk.Frame(self.recc_frame, padding=10)
         frm.grid()
 
         # Display user input and weights
@@ -191,12 +192,10 @@ class CarRecommendationApp:
                 row=idx + 1, column=1, sticky="w", padx=10, pady=5
             )
 
-        # Display a larger text box to show the top recommendations (df.head(10))
-        result_text = tk.Text(frm, height=20, width=120)  # Adjust height and width as desired
+        result_text = tk.Text(frm, height=20, width=120)
         result_text.grid(row=len(user_input) + len(user_weights) + 4, column=0, columnspan=2, padx=10, pady=10)
-
-        # Insert df.head(10) into the text box
         result_text.insert(tk.END, self.df.head(10).to_string())
+        result_text.configure(state="disabled") # Lock textbox so the user can't mess it up
 
         # Display top recommended cars
         # NOTE: iterrows() has some weird behavior here, I don't like this enumerate() hack.
@@ -217,7 +216,7 @@ class CarRecommendationApp:
         #         )
 
         # Button to close the window
-        ttk.Button(frm, text="Close", command=self.master.destroy).grid(
+        ttk.Button(frm, text="Close", command=self.recc_frame.destroy).grid(
             row=len(user_input) + len(user_weights) + 5, column=0, columnspan=2, pady=10
         )
 
