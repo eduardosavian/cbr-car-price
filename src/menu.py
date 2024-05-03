@@ -3,6 +3,7 @@ from tkinter import ttk
 from similarity import load_data, clean_df, calculate_car_similarity
 
 class CarRecommendationApp:
+    KNOWLEDGE_DB = 'car_prices_mini'
     def __init__(self, master):
         self.master = master
         self.master.title("Car Recommendation System")
@@ -29,6 +30,12 @@ class CarRecommendationApp:
             "odometer": tk.DoubleVar(value=1),
             "condition": tk.DoubleVar(value=1),
             "year": tk.DoubleVar(value=1),
+        }
+
+        self.dic_tolerance_windows = {
+            "odometer": tk.DoubleVar(value=0),
+            "condition": tk.DoubleVar(value=0),
+            "year": tk.DoubleVar(value=0),
         }
 
 
@@ -109,6 +116,11 @@ class CarRecommendationApp:
                 ttk.Entry(frm, textvariable=self.dic_input[key]).grid(
                     column=1, row=row, pady=5
                 )
+                if key in ("odometer", "year", "condition"):
+                    ttk.Label(frm, text="Tolerance window (use 0 for default)").grid(
+                        column=2, row=row, pady=5)
+                    ttk.Entry(frm, textvariable=self.dic_tolerance_windows[key]).grid(
+                        column=3, row=row, pady=5, padx=3)
 
             row += 1
 
@@ -135,10 +147,10 @@ class CarRecommendationApp:
 
     def get_recommendations(self):
         # Load and clean the car data
-        self.df = load_data("data/car_prices.zip", "car_prices.csv")
+        self.df = load_data(f"data/{self.KNOWLEDGE_DB}.zip", f"{self.KNOWLEDGE_DB}.csv")
         self.df = clean_df(self.df)
 
-        # Get user input and weights
+        # Transform user input into a more usable format.
         user_input = {}
         for key, var in self.dic_input.items():
             val = var.get()
@@ -147,10 +159,16 @@ class CarRecommendationApp:
             except ValueError:
                 user_input[key.lower()] = val.lower()
 
+        tolerance_windows = {}
+        for key, var in self.dic_tolerance_windows.items():
+            val = var.get()
+            if val > 0:
+                tolerance_windows[key] = val
+
         user_weights = {key.lower(): var.get() for key, var in self.dic_weight.items()}
 
         # Calculate car similarity based on user input and weights
-        self.df = calculate_car_similarity(user_input, self.df, user_weights, tolerance_windows={})
+        self.df = calculate_car_similarity(user_input, self.df, user_weights, tolerance_windows)
 
         # Clear existing widgets in the master window
         for widget in self.master.winfo_children():
@@ -179,6 +197,24 @@ class CarRecommendationApp:
 
         # Insert df.head(10) into the text box
         result_text.insert(tk.END, self.df.head(10).to_string())
+
+        # Display top recommended cars
+        # NOTE: iterrows() has some weird behavior here, I don't like this enumerate() hack.
+        # i = 0
+        # for i, (_, row) in enumerate(self.df.head(10).iterrows()):
+        #     for col_idx, header in enumerate(headers):
+        #         fmt_text = ""
+        #         if header == 'similarity':
+        #             fmt_text = f"{100 * row[header]:.2f}"
+        #         else:
+        #             fmt_text = f"{row[header]}"
+        #
+        #         ttk.Label(frm, text=fmt_text).grid(
+        #             row=len(user_input) + len(user_weights) + i + 5,
+        #             column=col_idx,
+        #             padx=10,
+        #             pady=5,
+        #         )
 
         # Button to close the window
         ttk.Button(frm, text="Close", command=self.master.destroy).grid(

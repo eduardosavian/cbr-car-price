@@ -3,44 +3,44 @@ import pandas as pd
 import zipfile
 
 exterior_color_map = {
-    "white": np.array([255, 255, 255], dtype=np.float32),
-    "gray": np.array([128, 128, 128], dtype=np.float32),
-    "black": np.array([0, 0, 0], dtype=np.float32),
-    "red": np.array([255, 0, 0], dtype=np.float32),
-    "silver": np.array([192, 192, 192], dtype=np.float32),
-    "brown": np.array([165, 42, 42], dtype=np.float32),
-    "beige": np.array([245, 245, 200], dtype=np.float32),
-    "blue": np.array([0, 0, 255], dtype=np.float32),
-    "purple": np.array([128, 128, 128], dtype=np.float32),
-    "burgundy": np.array([128, 0, 32], dtype=np.float32),
-    "gold": np.array([255, 215, 0], dtype=np.float32),
-    "yellow": np.array([255, 255, 0], dtype=np.float32),
-    "green": np.array([0, 128, 0], dtype=np.float32),
-    "charcoal": np.array([54, 69, 79], dtype=np.float32),
-    "orange": np.array([255, 165, 0], dtype=np.float32),
+    "white"    : np.array([255, 255, 255], dtype=np.float32),
+    "gray"     : np.array([128, 128, 128], dtype=np.float32),
+    "black"    : np.array([0, 0, 0], dtype=np.float32),
+    "red"      : np.array([255, 0, 0], dtype=np.float32),
+    "silver"   : np.array([192, 192, 192], dtype=np.float32),
+    "brown"    : np.array([165, 42, 42], dtype=np.float32),
+    "beige"    : np.array([245, 245, 200], dtype=np.float32),
+    "blue"     : np.array([0, 0, 255], dtype=np.float32),
+    "purple"   : np.array([128, 128, 128], dtype=np.float32),
+    "burgundy" : np.array([128, 0, 32], dtype=np.float32),
+    "gold"     : np.array([255, 215, 0], dtype=np.float32),
+    "yellow"   : np.array([255, 255, 0], dtype=np.float32),
+    "green"    : np.array([0, 128, 0], dtype=np.float32),
+    "charcoal" : np.array([54, 69, 79], dtype=np.float32),
+    "orange"   : np.array([255, 165, 0], dtype=np.float32),
     "off-white": np.array([255, 255, 250], dtype=np.float32),
     "turquoise": np.array([64, 224, 208], dtype=np.float32),
-    "pink": np.array([255, 192, 203], dtype=np.float32),
-    "lime": np.array([0, 255, 0], dtype=np.float32),
+    "pink"     : np.array([255, 192, 203], dtype=np.float32),
+    "lime"     : np.array([0, 255, 0], dtype=np.float32),
 }
 
 interior_color_map = {
-    "white": np.array([255, 255, 255], dtype=np.float32),
-    "gray": np.array([128, 128, 128], dtype=np.float32),
-    "black": np.array([0, 0, 0], dtype=np.float32),
-    "red": np.array([255, 0, 0], dtype=np.float32),
-    "silver": np.array([192, 192, 192], dtype=np.float32),
-    "brown": np.array([165, 42, 42], dtype=np.float32),
-    "beige": np.array([245, 245, 200], dtype=np.float32),
-    "blue": np.array([0, 0, 255], dtype=np.float32),
-    "purple": np.array([128, 128, 128], dtype=np.float32),
-    "burgundy": np.array([128, 0, 32], dtype=np.float32),
-    "gold": np.array([255, 215, 0], dtype=np.float32),
-    "yellow": np.array([255, 255, 0], dtype=np.float32),
-    "green": np.array([0, 128, 0], dtype=np.float32),
-    "orange": np.array([255, 165, 0], dtype=np.float32),
+    "white"    : np.array([255, 255, 255], dtype=np.float32),
+    "gray"     : np.array([128, 128, 128], dtype=np.float32),
+    "black"    : np.array([0, 0, 0], dtype=np.float32),
+    "red"      : np.array([255, 0, 0], dtype=np.float32),
+    "silver"   : np.array([192, 192, 192], dtype=np.float32),
+    "brown"    : np.array([165, 42, 42], dtype=np.float32),
+    "beige"    : np.array([245, 245, 200], dtype=np.float32),
+    "blue"     : np.array([0, 0, 255], dtype=np.float32),
+    "purple"   : np.array([128, 128, 128], dtype=np.float32),
+    "burgundy" : np.array([128, 0, 32], dtype=np.float32),
+    "gold"     : np.array([255, 215, 0], dtype=np.float32),
+    "yellow"   : np.array([255, 255, 0], dtype=np.float32),
+    "green"    : np.array([0, 128, 0], dtype=np.float32),
+    "orange"   : np.array([255, 165, 0], dtype=np.float32),
     "off-white": np.array([255, 255, 250], dtype=np.float32),
-    "tan": np.array([210, 180, 140], dtype=np.float32),
+    "tan"      : np.array([210, 180, 140], dtype=np.float32),
 }
 
 color_map = {}
@@ -241,7 +241,6 @@ def similarity_color(color1, color2):
     r2, g2, b2 = color_map[color2]
     return 1 - np.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2)
 
-
 def calculate_car_similarity(car_input, df, weights, tolerance_windows: dict):
     weights = np.array(list(weights.values()))
     cars = df.to_numpy()
@@ -274,9 +273,6 @@ def calculate_car_similarity(car_input, df, weights, tolerance_windows: dict):
         condition_lo = df["condition"].min()
 
     weights /= np.sum(weights)
-    print(odometer_lo, odometer_hi)
-    print(condition_lo, condition_hi)
-    print(year_lo, year_hi)
 
     for car in cars:
         sim = np.sum(
