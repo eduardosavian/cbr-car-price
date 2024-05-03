@@ -24,12 +24,12 @@ class CarRecommendationApp:
             "maker": DoubleVar(value=1),
             "model": DoubleVar(value=1),
             "body": DoubleVar(value=1),
-            "transmission": DoubleVar(value=0),
-            "exterior_color": DoubleVar(value=0),
-            "interior_color": DoubleVar(value=0),
-            "odometer": DoubleVar(value=0),
-            "condition": DoubleVar(value=0),
-            "year": DoubleVar(value=0),
+            "transmission": DoubleVar(value=1),
+            "exterior_color": DoubleVar(value=1),
+            "interior_color": DoubleVar(value=1),
+            "odometer": DoubleVar(value=1),
+            "condition": DoubleVar(value=1),
+            "year": DoubleVar(value=1),
         }
 
         self.create_widgets()
@@ -180,9 +180,9 @@ class CarRecommendationApp:
             )
 
         # Display top recommended cars
-        for i, (index, row) in enumerate(self.df.head(1).iterrows()):
+        for i, (index, row) in enumerate(self.df.head(10).iterrows()):
             for col_idx, header in enumerate(headers):
-                ttk.Label(frm, text=row[header]).grid(
+                ttk.Label(frm, text=f"{row[header]:.2}").grid(
                     row=len(user_input) + len(user_weights) + i + 5,
                     column=col_idx,
                     padx=10,

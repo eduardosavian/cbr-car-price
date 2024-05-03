@@ -5,44 +5,44 @@ from openpyxl import Workbook  # Import Workbook from openpyxl
 
 
 exterior_color_map = {
-    "white": (255, 255, 255),
-    "gray": (128, 128, 128),
-    "black": (0, 0, 0),
-    "red": (255, 0, 0),
-    "silver": (192, 192, 192),
-    "brown": (165, 42, 42),
-    "beige": (245, 245, 200),
-    "blue": (0, 0, 255),
-    "purple": (128, 128, 128),
-    "burgundy": (128, 0, 32),
-    "gold": (255, 215, 0),
-    "yellow": (255, 255, 0),
-    "green": (0, 128, 0),
-    "charcoal": (54, 69, 79),
-    "orange": (255, 165, 0),
-    "off-white": (255, 255, 250),
-    "turquoise": (64, 224, 208),
-    "pink": (255, 192, 203),
-    "lime": (0, 255, 0),
+    "white": np.array([255, 255, 255], dtype=np.float32),
+    "gray": np.array([128, 128, 128], dtype=np.float32),
+    "black": np.array([0, 0, 0], dtype=np.float32),
+    "red": np.array([255, 0, 0], dtype=np.float32),
+    "silver": np.array([192, 192, 192], dtype=np.float32),
+    "brown": np.array([165, 42, 42], dtype=np.float32),
+    "beige": np.array([245, 245, 200], dtype=np.float32),
+    "blue": np.array([0, 0, 255], dtype=np.float32),
+    "purple": np.array([128, 128, 128], dtype=np.float32),
+    "burgundy": np.array([128, 0, 32], dtype=np.float32),
+    "gold": np.array([255, 215, 0], dtype=np.float32),
+    "yellow": np.array([255, 255, 0], dtype=np.float32),
+    "green": np.array([0, 128, 0], dtype=np.float32),
+    "charcoal": np.array([54, 69, 79], dtype=np.float32),
+    "orange": np.array([255, 165, 0], dtype=np.float32),
+    "off-white": np.array([255, 255, 250], dtype=np.float32),
+    "turquoise": np.array([64, 224, 208], dtype=np.float32),
+    "pink": np.array([255, 192, 203], dtype=np.float32),
+    "lime": np.array([0, 255, 0], dtype=np.float32),
 }
 
 interior_color_map = {
-    "white": (255, 255, 255),
-    "gray": (128, 128, 128),
-    "black": (0, 0, 0),
-    "red": (255, 0, 0),
-    "silver": (192, 192, 192),
-    "brown": (165, 42, 42),
-    "beige": (245, 245, 200),
-    "blue": (0, 0, 255),
-    "purple": (128, 128, 128),
-    "burgundy": (128, 0, 32),
-    "gold": (255, 215, 0),
-    "yellow": (255, 255, 0),
-    "green": (0, 128, 0),
-    "orange": (255, 165, 0),
-    "off-white": (255, 255, 250),
-    "tan": (210, 180, 140),
+    "white": np.array([255, 255, 255], dtype=np.float32),
+    "gray": np.array([128, 128, 128], dtype=np.float32),
+    "black": np.array([0, 0, 0], dtype=np.float32),
+    "red": np.array([255, 0, 0], dtype=np.float32),
+    "silver": np.array([192, 192, 192], dtype=np.float32),
+    "brown": np.array([165, 42, 42], dtype=np.float32),
+    "beige": np.array([245, 245, 200], dtype=np.float32),
+    "blue": np.array([0, 0, 255], dtype=np.float32),
+    "purple": np.array([128, 128, 128], dtype=np.float32),
+    "burgundy": np.array([128, 0, 32], dtype=np.float32),
+    "gold": np.array([255, 215, 0], dtype=np.float32),
+    "yellow": np.array([255, 255, 0], dtype=np.float32),
+    "green": np.array([0, 128, 0], dtype=np.float32),
+    "orange": np.array([255, 165, 0], dtype=np.float32),
+    "off-white": np.array([255, 255, 250], dtype=np.float32),
+    "tan": np.array([210, 180, 140], dtype=np.float32),
 }
 
 color_map = {}
@@ -231,20 +231,25 @@ body_similarity_matrix = {
 def similarity_body(body1, body2):
     return body_similarity_matrix[body1][body2]
 
-def similarity_symbols(symbol1, symbol2):
-    return 0 if symbol1 == symbol2 else 1
 
-def similarity_numeric(numeric1, numeric2):
+def similarity_symbols(symbol1, symbol2):
+    return 1 if symbol1 == symbol2 else 0
+
+
+def similarity_numeric(numeric1, numeric2, max, min, k):
     numeric1 = float(numeric1)
     numeric2 = float(numeric2)
-    return 1 - np.abs(numeric2 - numeric1) / (numeric2 + numeric1)
+
+    if(k == 0):
+        return 1 - np.abs((numeric2 - numeric1) / 2 * k)
+    else:
+        return 1 - np.abs((numeric2 - numeric1) / (max - min))
+
 
 def similarity_color(color1, color2):
     r1, g1, b1 = color_map[color1]
     r2, g2, b2 = color_map[color2]
-    return np.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2) / np.sqrt(
-        3 * (255**2)
-    )
+    return 1 - np.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2)
 
 
 def calculate_car_similarity(car_input, df, weights):
@@ -252,6 +257,16 @@ def calculate_car_similarity(car_input, df, weights):
     cars = df.to_numpy()
     cars = np.concatenate((cars, np.zeros((cars.shape[0], 1))), axis=1)
     car_input = np.array(list(car_input.values()))
+
+    max_odometer = df["odometer"].max()
+    min_odometer = df["odometer"].min()
+
+    max_condition = df["condition"].max()
+    min_condition = df["condition"].min()
+
+    max_year = df["year"].max()
+    min_year = df["year"].min()
+    k = 0
 
     weights /= np.sum(weights)
 
@@ -266,9 +281,13 @@ def calculate_car_similarity(car_input, df, weights):
                     similarity_symbols(car_input[3], car[3]),
                     similarity_color(car_input[4], car[4]),
                     similarity_color(car_input[5], car[5]),
-                    similarity_numeric(car_input[6], car[6]),
-                    similarity_numeric(car_input[7], car[7]),
-                    similarity_numeric(car_input[8], car[8])
+                    similarity_numeric(
+                        car_input[6], car[6], max_odometer, min_odometer, k
+                    ),
+                    similarity_numeric(
+                        car_input[7], car[7], max_condition, min_condition, k
+                    ),
+                    similarity_numeric(car_input[8], car[8], max_year, min_year, k),
                 ]
             )
         )
@@ -276,6 +295,6 @@ def calculate_car_similarity(car_input, df, weights):
         car[-1] = sim
 
     cars = pd.DataFrame(cars, columns=list(df.columns) + ["similarity"])
-    cars = cars.sort_values(by="similarity")
+    cars = cars.sort_values(by="similarity", ascending=False)
 
     return cars
