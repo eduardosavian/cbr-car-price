@@ -5,7 +5,7 @@ def main():
     root = Tk()
     root.title("Car Recommendation System")
     app = CarRecommendationApp(root)
-    app.create_widgets()
+    app.main_menu()
 
     root.mainloop()
 
