@@ -113,11 +113,11 @@ def clean_body_types(body_type):
             "cab plus",
             "SuperCab",
         ]:
-            return "cab"  # Example category for various cab types
+            return "cab"
         else:
-            return "other"  # Assign 'other' category for unknown types or unique categories
+            return "other"
     else:
-        return "other"  # Handle NaN values by assigning to 'other' category
+        return "other"
 
 
 def clean_df(df):
@@ -248,25 +248,24 @@ def similarity_condition(condition1, condition2, condition_max=5, condition_min=
     return 1 - np.abs(float(condition2) - float(condition1)) / (
         float(condition_max) - float(condition_min)
     )
-    # return np.abs(float(condition1) - float(condition2)) / float(condition2)
 
 
 def similarity_odometer(odometer1, odometer2, odometer_max=50, odometer_min=0):
     return 1 - np.abs(float(odometer2) - float(odometer1)) / (
         float(odometer_max) - float(odometer_min)
     )
-    # return np.abs(float(odometer1) - float(odometer2)) / float(odometer2)
 
 
 def similarity_color(color1, color2):
     r1, g1, b1 = color_map[color1]
     r2, g2, b2 = color_map[color2]
-    return (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2
+    return np.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2) / np.sqrt(
+        3 * (255**2)
+    )
 
 
 def similarity_year(year1, year2, year_max=2021, year_min=1900):
     return 1 - np.abs(float(year2) - float(year1)) / (float(year_max) - float(year_min))
-    # return (float(year1) - float(year2)) ** 2
 
 
 def calculate_car_similarity(car_input, df, weights):
@@ -287,8 +286,6 @@ def calculate_car_similarity(car_input, df, weights):
     weights /= np.sum(weights)
 
     for car in cars:
-        print(car)
-        print(similarity_odometer(car[6], car_input[6], odometer_max, odometer_min))
         sim = np.sum(
             weights
             * np.array(
@@ -299,8 +296,12 @@ def calculate_car_similarity(car_input, df, weights):
                     similarity_transmission(car[3], car_input[3]),
                     similarity_color(car[4], car_input[4]),
                     similarity_color(car[5], car_input[5]),
-                    similarity_odometer(car[6], car_input[6], odometer_max, odometer_min),
-                    similarity_condition(car[7], car_input[7], codition_max, condition_min),
+                    similarity_odometer(
+                        car[6], car_input[6], odometer_max, odometer_min
+                    ),
+                    similarity_condition(
+                        car[7], car_input[7], codition_max, condition_min
+                    ),
                     similarity_year(car[8], car_input[8], year_max, year_min),
                 ]
             )
