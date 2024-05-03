@@ -1,5 +1,7 @@
 # RBC
 
+Feito por Eduardo Savian, Marcos Fehlauer
+
 ## Description
 
 - Programar um protótipo de RBC para um tema definido pela equipe. Devem ser determinados pela equipe todos os componentes de um RBC até a recuperação do caso.
