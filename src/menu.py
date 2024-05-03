@@ -1,8 +1,7 @@
 import tkinter as tk
-import time
 import pandas as pd
 from tkinter import ttk
-from src.similarity import load_data, clean_df, calculate_car_similarity
+from similarity import load_data, clean_df, calculate_car_similarity
 
 class CarRecommendationApp:
     KNOWLEDGE_DB = 'car_prices_mini'
@@ -26,6 +25,7 @@ class CarRecommendationApp:
             "odometer": tk.DoubleVar(value=37),
             "condition": tk.DoubleVar(value=5),
             "year": tk.IntVar(value=2015),
+            "price": tk.DoubleVar(),
         }
         self.dic_weight = {
             "maker": tk.DoubleVar(value=1),
@@ -141,8 +141,13 @@ class CarRecommendationApp:
                 ttk.Entry(frm, textvariable=self.dic_input[key]).grid(
                     column=1, row=row, pady=5
                 )
-
             row += 1
+
+        # price = tk.DoubleVar()
+        # tk.Label(text="Price:").grid(column=0, row=row)
+        # tk.Entry(frm, textvariable=price).grid(column=1, row=row, pady=5)
+
+        row += 1
 
         def add_knowledge_callback():
             tk.Label(text="Added knowledge to database.").grid(column=0, row=row+1)
@@ -158,15 +163,16 @@ class CarRecommendationApp:
                     user_input[key.lower()] = val.lower()
 
             args = [val for val in user_input.values()]
-            args.append(0.0) # Default similarity
 
             self.df.loc[-1] = args
 
             self.clear_root()
             self.main_menu()
 
-        tk.Button(text="Add", command=add_knowledge_callback).grid(column=0, row=1)
-        tk.Button(text="Go back", command=self.main_menu).grid(column=0, row=2)
+        tk.Button(text="Add", command=add_knowledge_callback).grid(column=0, row=row)
+        row += 1
+        tk.Button(text="Go back", command=self.main_menu).grid(column=0, row=row)
+        row += 1
 
     def clear_root(self):
         for wid in self.root.winfo_children():
@@ -180,6 +186,8 @@ class CarRecommendationApp:
 
         row = 0
         for key in self.dic_input:
+            if key == "price": continue
+            
             ttk.Label(frm, text=f"{key.capitalize()}:").grid(
                 column=0, row=row, sticky="e"
             )
@@ -320,6 +328,7 @@ class CarRecommendationApp:
         )
 
         for idx, (k, value) in enumerate(user_input.items()):
+            if k == "price": continue
             ttk.Label(frm, text=f"{k.capitalize()}: {value}").grid(
                 row=idx + 1, column=0, sticky="w", padx=10, pady=5
             )
