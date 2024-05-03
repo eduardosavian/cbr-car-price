@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
 import zipfile
-from openpyxl import Workbook  # Import Workbook from openpyxl
-
 
 exterior_color_map = {
     "white": np.array([255, 255, 255], dtype=np.float32),
