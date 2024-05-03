@@ -134,7 +134,7 @@ class CarRecommendationApp:
         ).grid(column=0, row=row, columnspan=2, pady=10)
 
     def get_recommendations(self):
-    # Load and clean the car data
+        # Load and clean the car data
         self.df = load_data("data/car_prices.zip", "car_prices.csv")
         self.df = clean_df(self.df)
 
@@ -173,8 +173,8 @@ class CarRecommendationApp:
                 row=idx + 1, column=1, sticky="w", padx=10, pady=5
             )
 
-        # Display a text box to show the top recommendations (df.head(10))
-        result_text = tk.Text(frm, height=15, width=100)
+        # Display a larger text box to show the top recommendations (df.head(10))
+        result_text = tk.Text(frm, height=20, width=120)  # Adjust height and width as desired
         result_text.grid(row=len(user_input) + len(user_weights) + 4, column=0, columnspan=2, padx=10, pady=10)
 
         # Insert df.head(10) into the text box
@@ -184,4 +184,5 @@ class CarRecommendationApp:
         ttk.Button(frm, text="Close", command=self.master.destroy).grid(
             row=len(user_input) + len(user_weights) + 5, column=0, columnspan=2, pady=10
         )
+
 
