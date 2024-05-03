@@ -1,4 +1,4 @@
-from menu import *
+from src.menu import *
 from tkinter import Tk
 from sys import exit
 

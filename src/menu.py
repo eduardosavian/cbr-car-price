@@ -2,7 +2,7 @@ import tkinter as tk
 import time
 import pandas as pd
 from tkinter import ttk
-from similarity import load_data, clean_df, calculate_car_similarity
+from src.similarity import load_data, clean_df, calculate_car_similarity
 
 class CarRecommendationApp:
     KNOWLEDGE_DB = 'car_prices_mini'

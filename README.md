@@ -36,6 +36,13 @@ pip install -r requirements.txt
 python src/main.py
 ```
 
+or
+
+```bash
+.\cbr.exe
+```
+
+
 ## Links
 
 - [Vehicle Sales Data](https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data)
