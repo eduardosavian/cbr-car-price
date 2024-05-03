@@ -1,7 +1,6 @@
-from tkinter import *
+import tkinter as tk
 from tkinter import ttk
-from utils import load_data, clean_df, calculate_car_similarity
-
+from similarity import load_data, clean_df, calculate_car_similarity
 
 class CarRecommendationApp:
     def __init__(self, master):
@@ -10,29 +9,28 @@ class CarRecommendationApp:
 
         self.df = None
         self.dic_input = {
-            "maker": StringVar(value="bmw"),
-            "model": StringVar(value="x5"),
-            "body": StringVar(value="suv"),
-            "transmission": StringVar(value="automatic"),
-            "exterior_color": StringVar(value="black"),
-            "interior_color": StringVar(value="black"),
-            "odometer": StringVar(value="37"),
-            "condition": StringVar(value="5"),
-            "year": StringVar(value="2015"),
+            "maker": tk.StringVar(value="bmw"),
+            "model": tk.StringVar(value="x5"),
+            "body": tk.StringVar(value="suv"),
+            "transmission": tk.StringVar(value="automatic"),
+            "exterior_color": tk.StringVar(value="black"),
+            "interior_color": tk.StringVar(value="black"),
+            "odometer": tk.DoubleVar(value=37),
+            "condition": tk.DoubleVar(value=5),
+            "year": tk.IntVar(value=2015),
         }
         self.dic_weight = {
-            "maker": DoubleVar(value=1),
-            "model": DoubleVar(value=1),
-            "body": DoubleVar(value=1),
-            "transmission": DoubleVar(value=1),
-            "exterior_color": DoubleVar(value=1),
-            "interior_color": DoubleVar(value=1),
-            "odometer": DoubleVar(value=1),
-            "condition": DoubleVar(value=1),
-            "year": DoubleVar(value=1),
+            "maker": tk.DoubleVar(value=1),
+            "model": tk.DoubleVar(value=1),
+            "body": tk.DoubleVar(value=1),
+            "transmission": tk.DoubleVar(value=1),
+            "exterior_color": tk.DoubleVar(value=1),
+            "interior_color": tk.DoubleVar(value=1),
+            "odometer": tk.DoubleVar(value=1),
+            "condition": tk.DoubleVar(value=1),
+            "year": tk.DoubleVar(value=1),
         }
 
-        self.create_widgets()
 
     def create_widgets(self):
         frm = ttk.Frame(self.master, padding=10)
@@ -141,11 +139,18 @@ class CarRecommendationApp:
         self.df = clean_df(self.df)
 
         # Get user input and weights
-        user_input = {key: var.get().lower() for key, var in self.dic_input.items()}
-        user_weights = {key: var.get() for key, var in self.dic_weight.items()}
+        user_input = {}
+        for key, var in self.dic_input.items():
+            val = var.get()
+            try:
+                user_input[key.lower()] = float(val)
+            except ValueError:
+                user_input[key.lower()] = val.lower()
+
+        user_weights = {key.lower(): var.get() for key, var in self.dic_weight.items()}
 
         # Calculate car similarity based on user input and weights
-        self.df = calculate_car_similarity(user_input, self.df, user_weights)
+        self.df = calculate_car_similarity(user_input, self.df, user_weights, tolerance_windows={})
 
         # Clear existing widgets in the master window
         for widget in self.master.winfo_children():
@@ -159,11 +164,13 @@ class CarRecommendationApp:
         ttk.Label(frm, text="User Input:", font=("Helvetica", 14, "bold")).grid(
             row=0, column=0, columnspan=2, pady=10
         )
-        for idx, (key, value) in enumerate(user_input.items()):
-            ttk.Label(frm, text=f"{key.capitalize()}: {value}").grid(
+
+        for idx, (k, value) in enumerate(user_input.items()):
+            print(k, value)
+            ttk.Label(frm, text=f"{k.capitalize()}: {value}").grid(
                 row=idx + 1, column=0, sticky="w", padx=10, pady=5
             )
-            ttk.Label(frm, text=f"Weight: {user_weights[key]}").grid(
+            ttk.Label(frm, text=f"Weight: {user_weights[k]}").grid(
                 row=idx + 1, column=1, sticky="w", padx=10, pady=5
             )
 
@@ -180,6 +187,7 @@ class CarRecommendationApp:
             )
 
         # Display top recommended cars
+        i = 0
         for i, (index, row) in enumerate(self.df.head(10).iterrows()):
             for col_idx, header in enumerate(headers):
                 ttk.Label(frm, text=f"{row[header]:.2}").grid(

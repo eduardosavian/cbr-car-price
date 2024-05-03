@@ -233,16 +233,8 @@ def similarity_body(body1, body2):
 def similarity_symbols(symbol1, symbol2):
     return 1 if symbol1 == symbol2 else 0
 
-
-def similarity_numeric(numeric1, numeric2, max, min, k):
-    numeric1 = float(numeric1)
-    numeric2 = float(numeric2)
-
-    if(k == 0):
-        return 1 - np.abs((numeric2 - numeric1) / 2 * k)
-    else:
-        return 1 - np.abs((numeric2 - numeric1) / (max - min))
-
+def numeric_similarity(a, b, lo, hi):
+    return 1 - np.abs((a - b) / (hi - lo))
 
 def similarity_color(color1, color2):
     r1, g1, b1 = color_map[color1]
@@ -250,42 +242,55 @@ def similarity_color(color1, color2):
     return 1 - np.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2)
 
 
-def calculate_car_similarity(car_input, df, weights):
+def calculate_car_similarity(car_input, df, weights, tolerance_windows: dict):
     weights = np.array(list(weights.values()))
     cars = df.to_numpy()
     cars = np.concatenate((cars, np.zeros((cars.shape[0], 1))), axis=1)
     car_input = np.array(list(car_input.values()))
 
-    max_odometer = df["odometer"].max()
-    min_odometer = df["odometer"].min()
+    odometer_hi, odometer_lo = 0, 0
+    condition_hi, condition_lo = 0, 0
+    year_hi, year_lo = 0, 0
 
-    max_condition = df["condition"].max()
-    min_condition = df["condition"].min()
+    if "odometer" in tolerance_windows:
+        odometer_hi = tolerance_windows["odometer"]
+        odometer_lo = - tolerance_windows["odometer"]
+    else:
+        odometer_hi = df["odometer"].max()
+        odometer_lo = df["odometer"].min()
 
-    max_year = df["year"].max()
-    min_year = df["year"].min()
-    k = 0
+    if "year" in tolerance_windows:
+        year_hi = tolerance_windows["year"]
+        year_lo = - tolerance_windows["year"]
+    else:
+        year_hi = df["year"].max()
+        year_lo = df["year"].min()
+
+    if "condition" in tolerance_windows:
+        condition_hi = tolerance_windows["condition"]
+        condition_lo = - tolerance_windows["condition"]
+    else:
+        condition_hi = df["condition"].max()
+        condition_lo = df["condition"].min()
 
     weights /= np.sum(weights)
+    print(odometer_lo, odometer_hi)
+    print(condition_lo, condition_hi)
+    print(year_lo, year_hi)
 
     for car in cars:
         sim = np.sum(
-            weights
-            * np.array(
+            weights * np.array(
                 [
                     similarity_symbols(car_input[0], car[0]),
                     similarity_symbols(car_input[1], car[1]),
-                    similarity_body(car_input[2], car[2]),
+                    similarity_body(car_input[2],    car[2]),
                     similarity_symbols(car_input[3], car[3]),
-                    similarity_color(car_input[4], car[4]),
-                    similarity_color(car_input[5], car[5]),
-                    similarity_numeric(
-                        car_input[6], car[6], max_odometer, min_odometer, k
-                    ),
-                    similarity_numeric(
-                        car_input[7], car[7], max_condition, min_condition, k
-                    ),
-                    similarity_numeric(car_input[8], car[8], max_year, min_year, k),
+                    similarity_color(car_input[4],   car[4]),
+                    similarity_color(car_input[5],   car[5]),
+                    numeric_similarity(float(car_input[6]), float(car[6]), odometer_lo,  odometer_hi),
+                    numeric_similarity(float(car_input[7]), float(car[7]), condition_lo, condition_hi),
+                    numeric_similarity(float(car_input[8]), float(car[8]), year_lo,      year_hi),
                 ]
             )
         )
