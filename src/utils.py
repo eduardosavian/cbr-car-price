@@ -176,14 +176,6 @@ def clean_df(df):
     return df
 
 
-def similarity_maker(maker1, maker2):
-    return 0 if maker1 == maker2 else 1
-
-
-def similarity_model(model1, model2):
-    return 0 if model1 == model2 else 1
-
-
 body_similarity_matrix = {
     "suv": {
         "suv": 1.0,
@@ -239,22 +231,13 @@ body_similarity_matrix = {
 def similarity_body(body1, body2):
     return body_similarity_matrix[body1][body2]
 
+def similarity_symbols(symbol1, symbol2):
+    return 0 if symbol1 == symbol2 else 1
 
-def similarity_transmission(transmission1, transmission2):
-    return 0 if transmission1 == transmission2 else 1
-
-
-def similarity_condition(condition1, condition2, condition_max=5, condition_min=1):
-    return 1 - np.abs(float(condition2) - float(condition1)) / (
-        float(condition_max) - float(condition_min)
-    )
-
-
-def similarity_odometer(odometer1, odometer2, odometer_max=50, odometer_min=0):
-    return 1 - np.abs(float(odometer2) - float(odometer1)) / (
-        float(odometer_max) - float(odometer_min)
-    )
-
+def similarity_numeric(numeric1, numeric2):
+    numeric1 = float(numeric1)
+    numeric2 = float(numeric2)
+    return 1 - np.abs(numeric2 - numeric1) / (numeric2 + numeric1)
 
 def similarity_color(color1, color2):
     r1, g1, b1 = color_map[color1]
@@ -264,24 +247,11 @@ def similarity_color(color1, color2):
     )
 
 
-def similarity_year(year1, year2, year_max=2021, year_min=1900):
-    return 1 - np.abs(float(year2) - float(year1)) / (float(year_max) - float(year_min))
-
-
 def calculate_car_similarity(car_input, df, weights):
     weights = np.array(list(weights.values()))
     cars = df.to_numpy()
     cars = np.concatenate((cars, np.zeros((cars.shape[0], 1))), axis=1)
     car_input = np.array(list(car_input.values()))
-
-    odometer_max = df["odometer"].max()
-    odometer_min = df["odometer"].min()
-
-    codition_max = df["condition"].max()
-    condition_min = df["condition"].min()
-
-    year_max = df["year"].max()
-    year_min = df["year"].min()
 
     weights /= np.sum(weights)
 
@@ -290,24 +260,20 @@ def calculate_car_similarity(car_input, df, weights):
             weights
             * np.array(
                 [
-                    similarity_maker(car[0], car_input[0]),
-                    similarity_model(car[1], car_input[1]),
-                    similarity_body(car[2], car_input[2]),
-                    similarity_transmission(car[3], car_input[3]),
-                    similarity_color(car[4], car_input[4]),
-                    similarity_color(car[5], car_input[5]),
-                    similarity_odometer(
-                        car[6], car_input[6], odometer_max, odometer_min
-                    ),
-                    similarity_condition(
-                        car[7], car_input[7], codition_max, condition_min
-                    ),
-                    similarity_year(car[8], car_input[8], year_max, year_min),
+                    similarity_symbols(car_input[0], car[0]),
+                    similarity_symbols(car_input[1], car[1]),
+                    similarity_body(car_input[2], car[2]),
+                    similarity_symbols(car_input[3], car[3]),
+                    similarity_color(car_input[4], car[4]),
+                    similarity_color(car_input[5], car[5]),
+                    similarity_numeric(car_input[6], car[6]),
+                    similarity_numeric(car_input[7], car[7]),
+                    similarity_numeric(car_input[8], car[8])
                 ]
             )
         )
 
-        car[-1] = sim / 1
+        car[-1] = sim
 
     cars = pd.DataFrame(cars, columns=list(df.columns) + ["similarity"])
     cars = cars.sort_values(by="similarity")
