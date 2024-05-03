@@ -6,7 +6,8 @@ class CarRecommendationApp:
     KNOWLEDGE_DB = 'car_prices_mini'
     def __init__(self, master):
         self.master_frame = master
-        self.recc_frame = None
+        self.query_frame = None
+        self.add_frame = None
         self.master_frame.title("Car Recommendation System")
 
         self.df = None
@@ -175,8 +176,8 @@ class CarRecommendationApp:
         # for widget in self.master_frame.winfo_children():
         #     widget.destroy()
 
-        self.recc_frame = tk.Toplevel(self.master_frame)
-        frm = ttk.Frame(self.recc_frame, padding=10)
+        self.query_frame = tk.Toplevel(self.master_frame)
+        frm = ttk.Frame(self.query_frame, padding=10)
         frm.grid()
 
         # Display user input and weights
@@ -192,7 +193,7 @@ class CarRecommendationApp:
                 row=idx + 1, column=1, sticky="w", padx=10, pady=5
             )
 
-        result_text = tk.Text(frm, height=20, width=120)
+        result_text = tk.Text(frm, height=20, width=160)
         result_text.grid(row=len(user_input) + len(user_weights) + 4, column=0, columnspan=2, padx=10, pady=10)
         result_text.insert(tk.END, self.df.head(10).to_string())
         result_text.configure(state="disabled") # Lock textbox so the user can't mess it up
@@ -216,7 +217,7 @@ class CarRecommendationApp:
         #         )
 
         # Button to close the window
-        ttk.Button(frm, text="Close", command=self.recc_frame.destroy).grid(
+        ttk.Button(frm, text="Close", command=self.query_frame.destroy).grid(
             row=len(user_input) + len(user_weights) + 5, column=0, columnspan=2, pady=10
         )
 
