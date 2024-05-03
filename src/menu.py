@@ -134,7 +134,7 @@ class CarRecommendationApp:
         ).grid(column=0, row=row, columnspan=2, pady=10)
 
     def get_recommendations(self):
-        # Load and clean the car data
+    # Load and clean the car data
         self.df = load_data("data/car_prices.zip", "car_prices.csv")
         self.df = clean_df(self.df)
 
@@ -166,7 +166,6 @@ class CarRecommendationApp:
         )
 
         for idx, (k, value) in enumerate(user_input.items()):
-            print(k, value)
             ttk.Label(frm, text=f"{k.capitalize()}: {value}").grid(
                 row=idx + 1, column=0, sticky="w", padx=10, pady=5
             )
@@ -174,33 +173,15 @@ class CarRecommendationApp:
                 row=idx + 1, column=1, sticky="w", padx=10, pady=5
             )
 
-        # Display recommendation headers
-        headers = self.df.columns
-        for col_idx, header in enumerate(headers):
-            ttk.Label(
-                frm, text=f"{header.capitalize()}", font=("Helvetica", 12, "bold")
-            ).grid(
-                row=len(user_input) + len(user_weights) + 4,
-                column=col_idx,
-                padx=10,
-                pady=5,
-            )
+        # Display a text box to show the top recommendations (df.head(10))
+        result_text = tk.Text(frm, height=15, width=100)
+        result_text.grid(row=len(user_input) + len(user_weights) + 4, column=0, columnspan=2, padx=10, pady=10)
 
-        # Display top recommended cars
-        i = 0
-        for i, (index, row) in enumerate(self.df.head(10).iterrows()):
-            for col_idx, header in enumerate(headers):
-                ttk.Label(frm, text=f"{row[header]:.2}").grid(
-                    row=len(user_input) + len(user_weights) + i + 5,
-                    column=col_idx,
-                    padx=10,
-                    pady=5,
-                )
+        # Insert df.head(10) into the text box
+        result_text.insert(tk.END, self.df.head(10).to_string())
 
         # Button to close the window
         ttk.Button(frm, text="Close", command=self.master.destroy).grid(
-            row=len(user_input) + len(user_weights) + i + 6,
-            column=0,
-            columnspan=len(headers),
-            pady=10,
+            row=len(user_input) + len(user_weights) + 5, column=0, columnspan=2, pady=10
         )
+
