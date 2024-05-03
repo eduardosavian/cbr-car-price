@@ -18,18 +18,18 @@ class CarRecommendationApp:
             "interior_color": StringVar(value="black"),
             "odometer": StringVar(value="37"),
             "condition": StringVar(value="5"),
-            "year": StringVar(value="2014"),
+            "year": StringVar(value="2015"),
         }
         self.dic_weight = {
-            "maker": DoubleVar(value=30),
-            "model": DoubleVar(value=30),
-            "body": DoubleVar(value=30),
-            "transmission": DoubleVar(value=10),
-            "exterior_color": DoubleVar(value=2),
-            "interior_color": DoubleVar(value=2),
-            "odometer": DoubleVar(value=10),
-            "condition": DoubleVar(value=10),
-            "year": DoubleVar(value=5),
+            "maker": DoubleVar(value=1),
+            "model": DoubleVar(value=1),
+            "body": DoubleVar(value=1),
+            "transmission": DoubleVar(value=0),
+            "exterior_color": DoubleVar(value=0),
+            "interior_color": DoubleVar(value=0),
+            "odometer": DoubleVar(value=0),
+            "condition": DoubleVar(value=0),
+            "year": DoubleVar(value=0),
         }
 
         self.create_widgets()
@@ -180,7 +180,7 @@ class CarRecommendationApp:
             )
 
         # Display top recommended cars
-        for i, (index, row) in enumerate(self.df.head(10).iterrows()):
+        for i, (index, row) in enumerate(self.df.head(1).iterrows()):
             for col_idx, header in enumerate(headers):
                 ttk.Label(frm, text=row[header]).grid(
                     row=len(user_input) + len(user_weights) + i + 5,
